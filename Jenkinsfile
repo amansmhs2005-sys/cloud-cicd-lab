@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -18,6 +19,19 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm cloud-cicd-lab:latest python -c "from app import app; response = app.test_client().get('/'); assert response.status_code == 200; print('Application test passed')"
+                '''
+            }
+        }
+
+        stage('Deploy Application') {
+            steps {
+                sh '''
+                    docker rm -f cloud-cicd-app 2>/dev/null || true
+                    docker run -d \
+                        --name cloud-cicd-app \
+                        --restart unless-stopped \
+                        -p 5000:5000 \
+                        cloud-cicd-lab:latest
                 '''
             }
         }
