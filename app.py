@@ -9,6 +9,7 @@ def home():
     <h1>CI/CD Pipeline Using Jenkins</h1>
     <p>Flask application deployed successfully!</p>
     <p>Technologies: GitHub, Jenkins, Docker and AWS EC2</p>
+    <p>Version 2 deployed automatically through Jenkins CI/CD!</p>
     """
 
 if __name__ == "__main__":
