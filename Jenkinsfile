@@ -1,6 +1,9 @@
-
 pipeline {
     agent any
+
+    environment {
+        KUBECONFIG = '/var/lib/jenkins/.kube/config'
+    }
 
     stages {
         stage('Checkout') {
@@ -23,15 +26,28 @@ pipeline {
             }
         }
 
-        stage('Deploy Application') {
+        stage('Load Image into Minikube') {
+            steps {
+                sh '/usr/local/bin/minikube image load cloud-cicd-lab:latest'
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
             steps {
                 sh '''
-                    docker rm -f cloud-cicd-app 2>/dev/null || true
-                    docker run -d \
-                        --name cloud-cicd-app \
-                        --restart unless-stopped \
-                        -p 5000:5000 \
-                        cloud-cicd-lab:latest
+                    /usr/bin/kubectl apply -f k8s/deployment.yaml
+                    /usr/bin/kubectl apply -f k8s/service.yaml
+                    /usr/bin/kubectl rollout status deployment/cloud-cicd-app --timeout=120s
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    /usr/bin/kubectl get deployment cloud-cicd-app
+                    /usr/bin/kubectl get pods -l app=cloud-cicd-app
+                    /usr/bin/kubectl get service cloud-cicd-service
                 '''
             }
         }
