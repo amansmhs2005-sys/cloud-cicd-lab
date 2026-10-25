@@ -43,11 +43,12 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                    /usr/bin/kubectl apply -f k8s/deployment.yaml
-                    /usr/bin/kubectl apply -f k8s/service.yaml
-                    /usr/bin/kubectl rollout status deployment/cloud-cicd-app --timeout=120s
-                '''
+                   sh '''
+                        /usr/bin/kubectl apply -f k8s/deployment.yaml
+                        /usr/bin/kubectl apply -f k8s/service.yaml
+                        /usr/bin/kubectl rollout restart deployment/cloud-cicd-app
+                        /usr/bin/kubectl rollout status deployment/cloud-cicd-app --timeout=120s
+                    '''
             }
         }
 
