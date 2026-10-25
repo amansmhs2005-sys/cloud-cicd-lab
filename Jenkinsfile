@@ -26,9 +26,18 @@ pipeline {
             }
         }
 
+        stage('Export Image Archive') {
+            steps {
+                sh '''
+                    docker save cloud-cicd-lab:latest -o /tmp/cloud-cicd-lab.tar
+                    chmod 644 /tmp/cloud-cicd-lab.tar
+                '''
+            }
+        }
+
         stage('Load Image into Minikube') {
             steps {
-                sh '/usr/local/bin/minikube image load cloud-cicd-lab:latest'
+                sh 'sudo -n /usr/local/sbin/load-cloud-cicd-image'
             }
         }
 
